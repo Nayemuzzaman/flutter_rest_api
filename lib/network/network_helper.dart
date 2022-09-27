@@ -9,14 +9,13 @@ class NetworkHelper {
 
   static String concatUrlQP(String url, Map<String, String>? queryParameters) {
     if (url.isEmpty) return url;
-
     if (queryParameters == null || queryParameters.isEmpty) {
       return url;
     }
     final StringBuffer stringBuffer = StringBuffer("$url?");
     queryParameters.forEach((key, value) {
       if (value.trim() == '') return;
-      if (value.contains('')) throw Exception('Invalid Inout Exception');
+      if (value.contains(' ')) throw Exception('Invalid Input Exception');
       stringBuffer.write('$key=$value&');
     });
     final result = stringBuffer.toString();
@@ -26,34 +25,34 @@ class NetworkHelper {
   static bool _isValidResponse(json) {
     return json != null &&
         json['status'] != null &&
-        json['status'] == 'ok' &&
-        json['articles'] != null;
+        json['status'] == 'ok' && json['articles'] != null;
   }
 
-  static R filterResponse<R>(
-      {required NetworkCallBack callBack,
-      required http.Response? response,
-      required NetworkOnFailureCallBackWithMessage onFailureCallBackWithMessage,
-      CallBackParameterName parameterName = CallBackParameterName.all}) {
+  static R filterResponse<R>({
+    required NetworkCallBack callBack,
+    required http.Response? response,
+    required NetworkOnFailureCallBackWithMessage onFailureCallBackWithMessage,
+    CallBackParameterName parameterName = CallBackParameterName.all
+  }){
     try {
-      if (response == null || response.body.isEmpty) {
-        return onFailureCallBackWithMessage(
-            NetworkResponseErrorType.responseEmpty, 'Empty Response');
+      if(response == null || response.body.isEmpty){
+        return onFailureCallBackWithMessage(NetworkResponseErrorType.responseEmpty, 'empty response');
       }
+
       var json = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        if (_isValidResponse(json)) {
+
+      if(response.statusCode == 200){
+        if(_isValidResponse(json)){
           return callBack(parameterName.getJson(json));
         }
-      } else if (response.statusCode == 1708) {
+      }else if(response.statusCode == 1708){
         return onFailureCallBackWithMessage(
             NetworkResponseErrorType.socket, 'socket');
       }
       return onFailureCallBackWithMessage(
-            NetworkResponseErrorType.didNotSucceed, 'Unknown');
-    } catch (e) {
-      return onFailureCallBackWithMessage(
-          NetworkResponseErrorType.exception, 'Exception $e');
+          NetworkResponseErrorType.didNotSucceed, 'unknown');
+    }catch (e){
+      return onFailureCallBackWithMessage(NetworkResponseErrorType.exception, 'Exception $e');
     }
   }
 }

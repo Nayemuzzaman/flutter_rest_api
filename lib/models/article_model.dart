@@ -1,66 +1,40 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'article_model.g.dart';
+
+@JsonSerializable(createToJson: false)
 class Articles {
-  Source? source;
-  late final String author;
-  String? title;
-  String? description;
-  String? url;
-  String? urlToImage; 
-  String? publishedAt;
-  String? content;
+  @JsonKey(defaultValue: 'UnKnown')
+  final String author;
+  final String? title;
+  final String? description;
+  final String? url;
+  @JsonKey(name: 'urlToImage')
+  final String? imageUrl;
+  final String? publishedAt;
+  final String? content;
+  final ArticleSource source;
 
   Articles(
-      {this.source,
-      required this.author,
-      this.title,
-      this.description,
-      this.url,
-      this.urlToImage,
-      this.publishedAt,
-      this.content});
+      {required this.author,
+        required this.title,
+        required this.description,
+        required this.url,
+        required this.imageUrl,
+        required this.publishedAt,
+        required this.content,
+        required this.source});
 
-  Articles.fromJson(Map<String, dynamic> json) {
-    source =
-        json['source'] != null ? new Source.fromJson(json['source']) : null;
-    author = json['author'];
-    title = json['title'];
-    description = json['description'];
-    url = json['url'];
-    urlToImage = json['urlToImage'];
-    publishedAt = json['publishedAt'];
-    content = json['content'];
-  }
+  factory Articles.fromJson(Map<String, dynamic> json) => _$ArticleFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.source != null) {
-      data['source'] = this.source!.toJson();
-    }
-    data['author'] = this.author;
-    data['title'] = this.title;
-    data['description'] = this.description;
-    data['url'] = this.url;
-    data['urlToImage'] = this.urlToImage;
-    data['publishedAt'] = this.publishedAt;
-    data['content'] = this.content;
-    return data;
-  }
 }
 
-class Source {
-  String? id;
-  String? name;
+@JsonSerializable(createToJson: false)
+class ArticleSource {
+  final String? id;
+  final String? name;
 
-  Source({this.id, this.name});
+  ArticleSource({required this.id, required this.name});
 
-  Source.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    return data;
-  }
+  factory ArticleSource.fromJson(Map<String, dynamic> json) => _$ArticleSourceFromJson(json);
 }
